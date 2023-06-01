@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:tenor_search_app/theme/app_colors.dart';
+import 'package:tenor_search_app/widgets/search_widget.dart';
+
+import 'main_screen.dart';
 
 void main() {
   runApp(const TenorSearchApp());
@@ -23,21 +26,22 @@ class TenorSearchApp extends StatelessWidget {
             unselectedItemColor: Colors.blueGrey,
           )
       ),
-      // routes: {
-      //   '/auth': (context) => const AuthWidget(),
-      //   '/main_screen': (context) => const MainScreenWidget(),
-      //   //'/select': (context) => SelectPageWidget(),
-      // },
-      // initialRoute: '/auth',
-      // onGenerateRoute: (RouteSettings settings){
-      //   return MaterialPageRoute<void>(builder: (context) {
-      //     return Scaffold(
-      //       body: Center(
-      //         child: Text('Sorry it is Error!'),
-      //       ),
-      //     );
-      //   });
-      // },
+      routes: {
+        //'/auth': (context) => const AuthWidget(),
+        '/main_screen': (context) => MainScreenWidget(),
+        '/search': (context) => SearchWidget(),
+        //'/select': (context) => SelectPageWidget(),
+      },
+      initialRoute: '/main_screen',
+      onGenerateRoute: (RouteSettings settings){
+        return MaterialPageRoute<void>(builder: (context) {
+          return const Scaffold(
+            body: Center(
+              child: Text('Sorry it is Error!'),
+            ),
+          );
+        });
+      },
     );
   }
 }

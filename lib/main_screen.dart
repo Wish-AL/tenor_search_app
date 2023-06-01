@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:tenor_search_app/widgets/search_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
   const MainScreenWidget({Key? key}) : super(key: key);
@@ -11,18 +12,9 @@ class MainScreenWidget extends StatefulWidget {
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Index 0: Опис',
-
-    ),
-    Text(
-      'Index 1: Храрктеристики',
-
-    ),
-    Text(
-      'Index 2: Догляд',
-
-    ),
+    SearchWidget(),
+    SearchWidget(),
+    SearchWidget(),
   ];
 
 

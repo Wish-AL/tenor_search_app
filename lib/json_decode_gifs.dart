@@ -14,9 +14,9 @@ class MediumItems {
   MediumItems.fromJson(Map<String, dynamic> json) {
     preview = json['preview'];
     if (json['dims'] != null) {
-      List<String>? dims;
+      dims = <int>[];
       json['dims'].forEach((v) {
-        dims!.add(json['dims'].fromJson(v));
+        dims!.add(v);
       });
     }
     url = json['url'];
@@ -93,9 +93,9 @@ class Tinymp4 extends MediumItems {
     size = json['size'];
     preview = json['preview'];
     if (json['dims'] != null) {
-      List<String>? dims;
+      dims = <int>[];
       json['dims'].forEach((v) {
-        dims!.add(json['dims'].fromJson(v));
+        dims!.add(v);
       });
     }
   }
