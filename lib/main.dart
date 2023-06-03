@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tenor_search_app/theme/app_colors.dart';
-import 'package:tenor_search_app/widgets/search_widget.dart';
-
+import 'item_view_screen.dart';
 import 'main_screen.dart';
 
 void main() {
@@ -27,12 +26,10 @@ class TenorSearchApp extends StatelessWidget {
           )
       ),
       routes: {
-        //'/auth': (context) => const AuthWidget(),
-        '/main_screen': (context) => MainScreenWidget(),
-        '/search': (context) => SearchWidget(),
-        //'/select': (context) => SelectPageWidget(),
+        '/': (context) => MainScreenWidget(),
+        '/item': (context) => ItemViewScreenWidget(),
       },
-      initialRoute: '/main_screen',
+      initialRoute: '/',
       onGenerateRoute: (RouteSettings settings){
         return MaterialPageRoute<void>(builder: (context) {
           return const Scaffold(

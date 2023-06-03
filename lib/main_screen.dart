@@ -11,11 +11,11 @@ class MainScreenWidget extends StatefulWidget {
 
 class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    SearchWidget(),
-    SearchWidget(),
-    SearchWidget(),
-  ];
+  // static const List<Widget> _widgetOptions = <Widget>[
+  //   SearchWidget(),
+  //   SearchWidget(),
+  //   SearchWidget(),
+  // ];
 
 
 
@@ -25,6 +25,8 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       _selectedTab = index;
     });
 }
+  // Center(
+  // child: _widgetOptions[_selectedTab],
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +34,13 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       appBar: AppBar(
         title: const Text('Search in tenor'),
       ),
-      body: Center(
-        child: _widgetOptions[_selectedTab],
+      body: IndexedStack(
+        index: _selectedTab,
+        children: const [
+          SearchWidget(),
+          Text('favorite'),
+          Text('settings'),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
 

@@ -81,35 +81,35 @@ class Tinygif extends MediumItems {
   Tinygif.fromJson(super.json) : super.fromJson();
 }
 
-class Tinymp4 extends MediumItems {
-  double? duration;
-
-  Tinymp4({this.duration, super.preview, super.dims, super.url, super.size});
-
-  @override
-  Tinymp4.fromJson(Map<String, dynamic> json) {
-    duration = json['duration'];
-    url = json['url'];
-    size = json['size'];
-    preview = json['preview'];
-    if (json['dims'] != null) {
-      dims = <int>[];
-      json['dims'].forEach((v) {
-        dims!.add(v);
-      });
-    }
-  }
-
-// Map<String, dynamic> toJson() {
-//   final Map<String, dynamic> data = Map<String, dynamic>();
-//   data['duration'] = duration;
-//   data['url'] = url;
-//   data['size'] = size;
-//   data['preview'] = preview;
-//   data['dims'] =dims != null ? dims!.map((v) => v?.toJson()).toList() : null;
-//   return data;
+// class Tinymp4 extends MediumItems {
+//   int? duration;
+//
+//   Tinymp4({this.duration, super.preview, super.dims, super.url, super.size});
+//
+//   @override
+//   Tinymp4.fromJson(Map<String, dynamic> json) {
+//     duration = json['duration'];
+//     url = json['url'];
+//     size = json['size'];
+//     preview = json['preview'];
+//     if (json['dims'] != null) {
+//       dims = <int>[];
+//       json['dims'].forEach((v) {
+//         dims!.add(v);
+//       });
+//     }
+//   }
+//
+// // Map<String, dynamic> toJson() {
+// //   final Map<String, dynamic> data = Map<String, dynamic>();
+// //   data['duration'] = duration;
+// //   data['url'] = url;
+// //   data['size'] = size;
+// //   data['preview'] = preview;
+// //   data['dims'] =dims != null ? dims!.map((v) => v?.toJson()).toList() : null;
+// //   return data;
+// // }
 // }
-}
 
 class Tinywebm extends MediumItems {
 
@@ -133,11 +133,11 @@ class Medium {
   Nanogif? nanogif;
   Nanowebm? nanowebm;
   Mp4? mp4;
-  Tinymp4? tinymp4;
+  //Tinymp4? tinymp4;
   Loopedmp4? loopedmp4;
   Mediumgif? mediumgif;
 
-  Medium({this.nanomp4, this.tinywebm, this.webm, this.gif, this.tinygif, this.nanogif, this.nanowebm, this.mp4, this.tinymp4, this.loopedmp4, this.mediumgif});
+  Medium({this.nanomp4, this.tinywebm, this.webm, this.gif, this.tinygif, this.nanogif, this.nanowebm, this.mp4, this.loopedmp4, this.mediumgif});
 
   Medium.fromJson(Map<String, dynamic> json) {
     nanomp4 = json['nanomp4'] != null ? Nanomp4?.fromJson(json['nanomp4']) : null;
@@ -148,7 +148,7 @@ class Medium {
     nanogif = json['nanogif'] != null ? Nanogif?.fromJson(json['nanogif']) : null;
     nanowebm = json['nanowebm'] != null ? Nanowebm?.fromJson(json['nanowebm']) : null;
     mp4 = json['mp4'] != null ? Mp4?.fromJson(json['mp4']) : null;
-    tinymp4 = json['tinymp4'] != null ? Tinymp4?.fromJson(json['tinymp4']) : null;
+    //tinymp4 = json['tinymp4'] != null ? Tinymp4?.fromJson(json['tinymp4']) : null;
     loopedmp4 = json['loopedmp4'] != null ? Loopedmp4?.fromJson(json['loopedmp4']) : null;
     mediumgif = json['mediumgif'] != null ? Mediumgif?.fromJson(json['mediumgif']) : null;
   }
@@ -214,13 +214,13 @@ class Result {
   // }
 }
 
-class Root {
+class DecodeSearchRequest {
   List<Result?>? results;
   String? next;
 
-  Root({this.results, this.next});
+  DecodeSearchRequest({this.results, this.next});
 
-  Root.fromJson(Map<String, dynamic> json) {
+  DecodeSearchRequest.fromJson(Map<String, dynamic> json) {
     if (json['results'] != null) {
       results = <Result>[];
       json['results'].forEach((v) {
