@@ -4,8 +4,78 @@ import 'package:http/http.dart' as http;
 import '../json_decode_gifs.dart';
 import '/json_decode_autocomplete.dart';
 import '/theme/app_colors.dart';
+import 'autocomplete_listview_widget.dart';
 import 'card_widget.dart';
+import 'package:provider/provider.dart';
 
+class ProviderWidget extends StatefulWidget {
+  const ProviderWidget({super.key});
+
+  @override
+  State<ProviderWidget> createState() => _ProviderWidgetState();
+}
+
+class _ProviderWidgetState extends State<ProviderWidget> {
+
+  @override
+  Widget build(BuildContext context) =>
+      ChangeNotifierProvider(create: (context) => Model(),//использовать provider где вместо context.read<Model>()._____ или (watch) используется context.select(Model value) => value.____
+        child: const SearchWidget(),
+      );
+
+}
+class Model extends ChangeNotifier {
+  List<String>? textAutocomplete = [];
+  DecodeSearchRequest? gifInfo;
+  String input = '';
+  String searchText = '';
+  String _page = '';
+  static const _apiKey = 'LIVDSRZULELA';
+  var client = http.Client();// обернуть в метод!!!?????????
+
+  void createSearchText(int index) {
+    searchText = textAutocomplete![index];
+    searchGifs();
+
+  }
+
+  void searchAutocomplete() async {
+    var client = http.Client();
+    //print('input ${input}');
+    try {
+      var response = await client.get(
+        Uri.https('g.tenor.com', 'v1/autocomplete',
+            {'q': input, 'key': _apiKey, 'limit': '5'}),
+      );//https://g.tenor.com/v1/autocomplete?q=<term>&key=<API KEY>
+      if (response.statusCode == 200) {
+        var jsonResponse = DecodeAutocomplete.fromJson(convert.jsonDecode(response.body) as Map<String, dynamic>);
+        textAutocomplete = jsonResponse.results;
+        notifyListeners();
+      } //else print('SOMETHING WRONG!${response.statusCode}');
+    } finally {
+      client.close();
+    }
+  }
+
+  void searchGifs() async {
+    var client = http.Client();
+    try {
+      var response = await client.get(
+        Uri.https('g.tenor.com', 'v1/search',
+            {'q': searchText, 'key': _apiKey, 'pos': _page}),//pos !!!!!!!!!!!
+      );//https://g.tenor.com/v1/search?q=excited&key=LIVDSRZULELA&limit=8
+      if (response.statusCode == 200) {
+        gifInfo = DecodeSearchRequest.fromJson(convert.jsonDecode(response.body) as Map<String, dynamic>);
+        _page = gifInfo?.next ?? '';
+        notifyListeners();
+        //print('===============================${gifInfo?.results?.length}');
+      }
+      //использовать числа из ответа 'next' в TextField для подгрузки контента!!!!!
+    } finally {
+      client.close();
+    }
+  }
+}
 
 class SearchWidget extends StatefulWidget {
   const SearchWidget({Key? key}) : super(key: key);
@@ -16,24 +86,11 @@ class SearchWidget extends StatefulWidget {
 
 class _SearchWidgetState extends State<SearchWidget> {
   var inputTextController = TextEditingController();
-  List<String>? textAutocomplete = [];
-  DecodeSearchRequest? gifInfo;
-  String _input = '';
-  String _searchText = '';
-  String _page = '';
-  static const _apiKey = 'LIVDSRZULELA';
-  var client = http.Client();// обернуть в метод!!!?????????
 
   _changeInputText() {
-    setState(() => _input = inputTextController.text);
-    searchAutocomplete(_input);
-    setState(() {
-
-    });
-  }
-  _selectInputText() {
-    setState(() => CardWidget);
-
+    setState(() => context.read<Model>().input = inputTextController.text);
+    context.read<Model>().searchAutocomplete();
+    //setState(() { });
   }
 
   @override
@@ -48,55 +105,14 @@ class _SearchWidgetState extends State<SearchWidget> {
     super.dispose();
   }
 
-  void searchAutocomplete(String input) async {
-    var client = http.Client();
-    //print('input ${input}');
-    try {
-      var response = await client.get(
-        Uri.https('g.tenor.com', 'v1/autocomplete',
-            {'q': input, 'key': _apiKey, 'limit': '5'}),
-      );//https://g.tenor.com/v1/autocomplete?q=<term>&key=<API KEY>
-      if (response.statusCode == 200) {
-        var jsonResponse = DecodeAutocomplete.fromJson(convert.jsonDecode(response.body) as Map<String, dynamic>);
-        textAutocomplete = jsonResponse.results;
-      } //else print('SOMETHING WRONG!${response.statusCode}');
-    } finally {
-      //client.close();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-
-    Widget listViewAutocomplete = SizedBox(
-      height: 170,
-      child: ListView.builder(
-        itemCount: textAutocomplete?.length,
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.all(6),
-            child: GestureDetector(
-                onTap: (){
-                  _searchText = textAutocomplete![index];
-                  //_selectInputText;
-                  client.close();
-                  _input = '';
-                  print('search text ${_searchText}');
-                  },
-                child: SizedBox(
-                    height: 15,
-                    child: Text(textAutocomplete![index]))),
-          );
-        },
-      ),
-    );
-
-    return SafeArea(
+      return SafeArea(
         child: Stack(
           children: [
             Padding(
               padding: const EdgeInsets.only(left: 6, top: 65, right: 6),
-              child: _searchText != '' ? CardWidget(searchText: _searchText) : const SizedBox(),
+              child: context.watch<Model>().searchText != '' ? CardWidget() : const SizedBox(),
             ),
             Column(
               children: [
@@ -113,13 +129,14 @@ class _SearchWidgetState extends State<SearchWidget> {
                 ),
                 controller: inputTextController,
                 onSubmitted: (text) {
-                   _searchText = text;
+                   context.read<Model>().searchText = text;
+                   context.read<Model>().searchGifs();
                    //_selectInputText;
-                   _input = '';
-                  print('text = $text');
+                   context.read<Model>().input = '';
+                  //print('text = $text');
                  },
                 ),
-                _input != '' ? listViewAutocomplete : SizedBox(),
+                context.watch<Model>().input != '' ? ListViewAutocomplete() : SizedBox(),
               ],
             ),
           ]

@@ -1,15 +1,37 @@
 import 'package:flutter/cupertino.dart';
+import 'package:provider/provider.dart';
+import 'package:tenor_search_app/widgets/search_widget.dart';
 
-class listViewAutocomplete extends StatefulWidget {
-  const listViewAutocomplete({super.key});
+class ListViewAutocomplete extends StatefulWidget {
+  const ListViewAutocomplete({super.key});
 
   @override
-  State<listViewAutocomplete> createState() => _listViewAutocompleteState();
+  State<ListViewAutocomplete> createState() => _ListViewAutocompleteState();
 }
 
-class _listViewAutocompleteState extends State<listViewAutocomplete> {
+class _ListViewAutocompleteState extends State<ListViewAutocomplete> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    final modelRead = context.read<Model>();
+    final modelWatch = context.watch<Model>();
+    return SizedBox(
+      height: 170,
+      child: ListView.builder(
+        itemCount: modelWatch.textAutocomplete?.length,
+        itemBuilder: (context, index) {
+          return Padding(
+            padding: const EdgeInsets.all(6),
+            child: GestureDetector(
+                onTap: () {
+                  modelRead.createSearchText(index);
+                  modelRead.input = '';
+                },
+                child: SizedBox(
+                    height: 15,
+                    child: Text(modelWatch.textAutocomplete![index]))),
+          );
+        },
+      ),
+    );
   }
 }

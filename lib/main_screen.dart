@@ -37,7 +37,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       body: IndexedStack(
         index: _selectedTab,
         children: const [
-          SearchWidget(),
+          ProviderWidget(),//SearchWidget()
           Text('favorite'),
           Text('settings'),
         ],
