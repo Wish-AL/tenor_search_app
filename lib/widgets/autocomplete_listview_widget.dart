@@ -24,7 +24,10 @@ class _ListViewAutocompleteState extends State<ListViewAutocomplete> {
             child: GestureDetector(
                 onTap: () {
                   modelRead.createSearchText(index);
-                  modelRead.input = '';
+                  modelRead.searchTextFocusNode.unfocus();
+                  //inputTextController.text(modelWatch.textAutocomplete![index]);
+                  //modelRead.input = '';
+                  modelRead.textAutocomplete?.length = 0;
                 },
                 child: SizedBox(
                     height: 15,

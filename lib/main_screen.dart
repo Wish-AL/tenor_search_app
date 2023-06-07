@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:tenor_search_app/widgets/favorite_items_widget.dart';
 import 'package:tenor_search_app/widgets/search_widget.dart';
 
 class MainScreenWidget extends StatefulWidget {
@@ -38,7 +39,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
         index: _selectedTab,
         children: const [
           ProviderWidget(),//SearchWidget()
-          Text('favorite'),
+          FavoriteItemsWidget(),
           Text('settings'),
         ],
       ),
