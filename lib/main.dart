@@ -4,7 +4,7 @@ import 'item_view_screen.dart';
 import 'main_screen.dart';
 
 void main() {
-  //WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
 
   //Model.gifDB = gifDatabase;
   runApp(const TenorSearchApp());
@@ -15,7 +15,6 @@ class TenorSearchApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return MaterialApp(
       //title: 'Flutter Demo',
       theme: ThemeData(
@@ -27,20 +26,7 @@ class TenorSearchApp extends StatelessWidget {
             selectedItemColor: Colors.white,
             unselectedItemColor: Colors.blueGrey,
           )),
-      routes: {
-        '/': (context) => const MainScreenWidget(),
-        '/item': (context) => const ItemViewScreenWidget(),
-      },
-      initialRoute: '/',
-      onGenerateRoute: (RouteSettings settings) {
-        return MaterialPageRoute<void>(builder: (context) {
-          return const Scaffold(
-            body: Center(
-              child: Text('Sorry it is Error!'),
-            ),
-          );
-        });
-      },
+      home: ProviderWidget(),
     );
   }
 }

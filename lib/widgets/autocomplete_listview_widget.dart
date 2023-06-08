@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:provider/provider.dart';
 import 'package:tenor_search_app/widgets/search_widget.dart';
 
+import '../main_screen.dart';
+
 class ListViewAutocomplete extends StatefulWidget {
   const ListViewAutocomplete({super.key});
 

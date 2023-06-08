@@ -2,25 +2,30 @@ import 'package:sqflite/sqflite.dart';
 import 'dart:async';
 import 'package:path/path.dart';
 
-
 class FavoriteList {
-  final int id;
-  final String gifUrl;
-  final String previewUrl;
+  int id;
+  String gifUrl;
+  String previewUrl;
 
-  const FavoriteList({
+  FavoriteList({
     required this.id,
     required this.gifUrl,
     required this.previewUrl,
   });
 
-  Map<String, dynamic> toMap() {
+  Map<String, Object?> toMap() {
     return {
-      'id': id,
-      'gifurl': gifUrl,
-      'previewurl': previewUrl,
+    'id': id,
+    'gifurl': gifUrl,
+    'previewurl': previewUrl,
     };
   }
+  // FavoriteList();
+  // FavoriteList.fromMap(Map<String, dynamic> map) {
+  //   id = map['id'];
+  //   gifUrl = map['gifurl'];
+  //   previewUrl = map['previewurl'];
+  // }
   @override
   String toString() {
     return 'FavoriteList{id: $id, gifurl: $gifUrl, previewurl: $previewUrl}';
@@ -28,30 +33,38 @@ class FavoriteList {
 }
 
 class DataBaseManage {
-  final int _version = 1;
-  final String _dbname = 'gifs_database.db';
-  static Database? _db;
-  DataBaseManage(){
-    _createDB();
-  }
 
-  Future<void> _createDB() async {
-    _db = await openDatabase(join(await getDatabasesPath(), 'gifs_database.db'),
-        onCreate: (db, version) async {
-      await db.execute(
-        'CREATE TABLE IF NOT EXISTS FavoriteGifs (id INTEGER PRIMARY KEY AUTOINCREMENT, gifurl VARCHAR(100), previewurl VARCHAR(100))',
-      );
-    }, version: _version);
+  // Database gifDB;
+  // DataBaseManage(){
+  //   gifDB = _createDB();
+  // }
+
+  Future<Database> createDB() async {
+    String path = await getDatabasesPath();
+    return openDatabase(join(path, 'gifs_database.db'),
+        onCreate: (db, version) {
+          return db.execute(
+            'CREATE TABLE IF NOT EXISTS FavoriteGifs (id INTEGER PRIMARY KEY AUTOINCREMENT, gifurl VARCHAR(100), previewurl VARCHAR(100))',
+          );
+        }, version: 1);
   }
 
   Future<void> insertToDB(String gifUrl, String previewUrl) async {
-    await _db
-        ?.insert('FavoriteGifs', {'gifurl': gifUrl, 'previewurl': previewUrl});
+    final Database db = await createDB();
+    await db
+        .insert('FavoriteGifs', {'gifurl': gifUrl, 'previewurl': previewUrl});
   }
-
-  static Future<List<FavoriteList>> gifs() async {
-    final List<Map<String, dynamic>>? mapsGifs = await _db?.query('FavoriteGifs');
-    return List.generate(mapsGifs!.length, (index) {
+  // Future<int> _insertToDB(String gifUrl, String previewUrl) async {
+  //   int result = 0;
+  //   final Database db = await createDB();
+  //   final id = await db.insert(
+  //       'Notes', note.toMap(),
+  //       conflictAlgorithm: ConflictAlgorithm.replace);
+  // }
+  Future<List<FavoriteList>> gifs() async {
+    final db = await createDB();
+    final List<Map<String, dynamic>> mapsGifs = await db.query('FavoriteGifs');
+    return List.generate(mapsGifs.length, (index) {
       return FavoriteList(
         id: mapsGifs[index]['id'],
         gifUrl: mapsGifs[index]['gifurl'],
@@ -59,9 +72,16 @@ class DataBaseManage {
       );
     });
   }
+  // Future<List<FavoriteList>> getItems() async {
+  //   final db = await createDB();
+  //   final List<Map<String, Object?>> queryResult =
+  //   await db.query('Notes', orderBy: NoteColumn.createdAt);
+  //   return queryResult.map((e) => Note.fromMap(e)).toList();
+  // }
 
   Future<void> deleteFromDB(int id) async {
-    await _db?.delete('FavoriteGifs', where: 'id = ?', whereArgs: [id]);
+    final db = await createDB();
+    await db.delete('FavoriteGifs', where: 'id = ?', whereArgs: [id]);
   }
 
 //static String url;

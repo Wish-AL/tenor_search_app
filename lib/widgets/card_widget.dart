@@ -3,9 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:tenor_search_app/widgets/search_widget.dart';
 import 'package:share_plus/share_plus.dart';
 import '../data_base.dart';
+import '../item_view_screen.dart';
+import '../main_screen.dart';
 
 class CardWidget extends StatefulWidget {
-  const CardWidget({Key? key}) : super(key: key);
+  final DataBaseManage currentDB;
+  const CardWidget({Key? key, required this.currentDB}) : super(key: key);
 
   @override
   State<CardWidget> createState() => _CardWidgetState();
@@ -13,9 +16,8 @@ class CardWidget extends StatefulWidget {
 
 class _CardWidgetState extends State<CardWidget> {
   final ScrollController _scrollController = new ScrollController();
-  List<FavoriteList> favoritesGifs = [];
-  late FavoriteList currentFavoriteList;
-  final DataBaseManage CurrentDB = DataBaseManage();
+
+
   @override
   void initState() {
     super.initState(); //trying to make pagination
@@ -51,13 +53,24 @@ class _CardWidgetState extends State<CardWidget> {
             child: Column(
               children: [
                 GestureDetector(
-                  //onTap: ,
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ItemViewScreenWidget(
+                          imageUrl: modelWatch.gifInfo!.results?[index]
+                                  ?.media?[0]?.gif?.url ??
+                              '',
+                        ),
+                      ),
+                    );
+                  },
                   child: Padding(
                     padding: const EdgeInsets.all(1.5),
                     child: Image(
                       image: NetworkImage(
                         modelWatch.gifInfo!.results?[index]?.media?[0]?.nanogif
-                                ?.url ?? '',
+                                ?.url ??
+                            '',
                       ),
                     ),
                   ),
@@ -75,7 +88,7 @@ class _CardWidgetState extends State<CardWidget> {
                           if (modelWatch.gifInfo!.results?[index]?.media?[0]
                                   ?.nanogif?.url !=
                               null) {
-                            CurrentDB.insertToDB(
+                            widget.currentDB.insertToDB(
                                 modelWatch.gifInfo!.results![index]!.media![0]!
                                     .gif!.url!,
                                 modelWatch.gifInfo!.results![index]!.media![0]!

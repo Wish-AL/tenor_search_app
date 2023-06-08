@@ -1,91 +1,19 @@
 import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:sqflite/sqflite.dart';
+import '../data_base.dart';
 import '../json_decode_gifs.dart';
+import '../main_screen.dart';
 import '/json_decode_autocomplete.dart';
 import '/theme/app_colors.dart';
 //import 'autocomplete_listview_widget.dart';
 import 'card_widget.dart';
-import 'package:provider/provider.dart';
-
-class ProviderWidget extends StatefulWidget {
-  const ProviderWidget({super.key});
-
-  @override
-  State<ProviderWidget> createState() => _ProviderWidgetState();
-}
-
-class _ProviderWidgetState extends State<ProviderWidget> {
-  @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-        create: (context) => Model(),
-        child: const SearchWidget(),
-      );
-}
-
-class Model extends ChangeNotifier {
-  List<String>? textAutocomplete = [];
-  static Future<Database>? gifDB;
-  DecodeSearchRequest? gifInfo;
-  String input = '';
-  String searchText = '';
-  //String _oldPage = '';
-  int currentPage = 0;
-  String hintText = '';
-  late FocusNode searchTextFocusNode;
-  static const _apiKey = 'LIVDSRZULELA';
-  var client = http.Client(); // обернуть в метод!!!?????????
-
-  void createSearchText(int index) {
-    searchText = textAutocomplete![index];
-    searchGifs();
-  }
-
-  void searchAutocomplete() async {
-    var client = http.Client();
-    //print('input ${input}');
-    try {
-      var response = await client.get(
-        Uri.https('g.tenor.com', 'v1/autocomplete',
-            {'q': input, 'key': _apiKey, 'limit': '5'}),
-      ); //https://g.tenor.com/v1/autocomplete?q=<term>&key=<API KEY>
-      if (response.statusCode == 200) {
-        var jsonResponse = DecodeAutocomplete.fromJson(
-            convert.jsonDecode(response.body) as Map<String, dynamic>);
-        textAutocomplete = jsonResponse.results;
-        // notifyListeners();
-      }
-    } finally {
-      client.close();
-    }
-    notifyListeners();
-  }
-
-  void searchGifs() async {
-    var client = http.Client();
-
-    try {
-      var response = await client.get(
-        Uri.https('g.tenor.com', 'v1/search',
-            {'q': searchText, 'key': _apiKey, 'limit': '30', 'pos': currentPage.toString()}), //pos !!!!!!!!!!!
-      ); //https://g.tenor.com/v1/search?q=excited&key=LIVDSRZULELA&limit=8
-      if (response.statusCode == 200) {
-        gifInfo = DecodeSearchRequest.fromJson(
-            convert.jsonDecode(response.body) as Map<String, dynamic>);
-
-      }
-      //использовать числа из ответа 'next' в TextField для подгрузки контента!!!!!
-    } finally {
-      client.close();
-    }
-    notifyListeners();
-  }
-
-}
 
 class SearchWidget extends StatefulWidget {
-  const SearchWidget({Key? key}) : super(key: key);
+  final DataBaseManage currentDB;
+  const SearchWidget({Key? key, required this.currentDB}) : super(key: key);
 
   @override
   State<SearchWidget> createState() => _SearchWidgetState();
@@ -93,6 +21,7 @@ class SearchWidget extends StatefulWidget {
 
 class _SearchWidgetState extends State<SearchWidget> {
   var inputTextController = TextEditingController();
+
 
 
   _changeInputText() {
@@ -150,7 +79,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         Padding(
           padding: const EdgeInsets.only(left: 6, top: 65, right: 6),
           child: modelWatch.searchText != ''
-              ? CardWidget()
+              ? CardWidget(currentDB: widget.currentDB)
               : const SizedBox(),
         ),
         Column(
