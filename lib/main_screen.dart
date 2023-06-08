@@ -17,33 +17,40 @@ class ProviderWidget extends StatefulWidget {
 
 class _ProviderWidgetState extends State<ProviderWidget> {
   @override
-  Widget build(BuildContext context) => ChangeNotifierProvider(
-        create: (context) => Model(),
-        child: MainScreenWidget(),
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => Model()),
+          ChangeNotifierProvider(create: (context) => ModelDB()),
+        ],
+        child: const MainScreenWidget(),
       );
 }
+class ModelDB extends ChangeNotifier{
+  List<FavoriteList> favoritesGifs = [];
+  late DataBaseManage gifDB;
+  void updateListValueInDelete() async{
+    favoritesGifs =
+  await gifDB.gifs();
+    notifyListeners();
+  }
+  void updateListValueInAdd(String id,String gifUrl, String previewUrl) async {
+    gifDB.insertToDB(id, gifUrl, previewUrl);
+    favoritesGifs = await gifDB.gifs();
+    notifyListeners();
+  }
 
+}
 class Model extends ChangeNotifier {
   List<String>? textAutocomplete = [];
-
-  //static Future<Database>? gifDB;
   DecodeSearchRequest? gifInfo;
   String input = '';
   String searchText = '';
-
-  //String _oldPage = '';
   int currentPage = 0;
   String hintText = '';
   late FocusNode searchTextFocusNode;
   static const _apiKey = 'LIVDSRZULELA';
   var client = http.Client();
-  // DataBaseManage currentDB = DataBaseManage();
-  // List<FavoriteList>? favoritesGifs = [];
-  //
-  // void getListDB() async {
-  //   favoritesGifs = await currentDB.gifs();
-  //   notifyListeners();
-  // }
+
   void createSearchText(int index) {
     searchText = textAutocomplete![index];
     searchGifs();
@@ -51,7 +58,6 @@ class Model extends ChangeNotifier {
 
   void searchAutocomplete() async {
     var client = http.Client();
-    //print('input ${input}');
     try {
       var response = await client.get(
         Uri.https('g.tenor.com', 'v1/autocomplete',
@@ -61,7 +67,6 @@ class Model extends ChangeNotifier {
         var jsonResponse = DecodeAutocomplete.fromJson(
             convert.jsonDecode(response.body) as Map<String, dynamic>);
         textAutocomplete = jsonResponse.results;
-        // notifyListeners();
       }
     } finally {
       client.close();
@@ -85,7 +90,6 @@ class Model extends ChangeNotifier {
         gifInfo = DecodeSearchRequest.fromJson(
             convert.jsonDecode(response.body) as Map<String, dynamic>);
       }
-      //использовать числа из ответа 'next' в TextField для подгрузки контента!!!!!
     } finally {
       client.close();
     }
@@ -104,13 +108,7 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
   int _selectedTab = 0;
   List<FavoriteList> favoritesGifs = [];
 
-  late DataBaseManage gifDB;
-  void getDataFromDB() async {
-    final data = await gifDB.gifs();
-    setState(() {
-      favoritesGifs = data;
-    });
-  }
+
   void onSelectTab(int index) {
     if (_selectedTab == index) return;
     setState(() {
@@ -118,23 +116,25 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
     });
   }
 
-  @override
-  void initState() {
-    //context.read<Model>().getListDB();
-    super.initState();
-    this.gifDB = DataBaseManage();
-    this.gifDB.createDB().whenComplete(() => {
-      getDataFromDB(),
-      setState(() { }),
+  void getDataFromDB() async {
+    final data = await context.read<ModelDB>().gifDB.gifs();
+    setState(() {
+      context.read<ModelDB>().favoritesGifs = data;
     });
   }
-  // Center(
-  // child: _widgetOptions[_selectedTab],
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ModelDB>().gifDB = DataBaseManage();
+    context.read<ModelDB>().gifDB.createDB().whenComplete(() => {
+          getDataFromDB(),
+          setState(() {}),
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final modelRead = context.read<Model>();
-    final modelWatch = context.watch<Model>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Search in tenor'),
@@ -142,9 +142,14 @@ class _MainScreenWidgetState extends State<MainScreenWidget> {
       body: IndexedStack(
         index: _selectedTab,
         children: [
-          SearchWidget(currentDB: gifDB), //SearchWidget()
-          FavoriteItemsWidget(currentDB: gifDB, favoritesGifs: favoritesGifs,),
-          Text('settings'),
+          SearchWidget(currentDB: context.watch<ModelDB>().gifDB), //SearchWidget()
+          FavoriteItemsWidget(
+            currentDB: context.watch<ModelDB>().gifDB,
+            favoritesGifs: context.read<ModelDB>().favoritesGifs,
+          ),
+          Center(
+            child: Image.asset('lib/images/phone_animation.gif'),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

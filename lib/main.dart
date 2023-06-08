@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:tenor_search_app/theme/app_colors.dart';
-import 'item_view_screen.dart';
 import 'main_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  //Model.gifDB = gifDatabase;
   runApp(const TenorSearchApp());
 }
 

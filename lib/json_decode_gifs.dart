@@ -1,8 +1,4 @@
-/*
-// Example Usage
-Map<String, dynamic> map = jsonDecode(<myJSONString>);
-var myRootNode = Root.fromJson(map);
-*/
+
 class MediumItems {
   String? preview;
   List<int?>? dims;

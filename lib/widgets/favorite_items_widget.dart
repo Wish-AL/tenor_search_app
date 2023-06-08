@@ -8,14 +8,15 @@ import '../main_screen.dart';
 class FavoriteItemsWidget extends StatefulWidget {
   final DataBaseManage currentDB;
   final List<FavoriteList> favoritesGifs;
-  const FavoriteItemsWidget({super.key, required this.currentDB, required this.favoritesGifs});
+
+  const FavoriteItemsWidget(
+      {super.key, required this.currentDB, required this.favoritesGifs});
 
   @override
   State<FavoriteItemsWidget> createState() => _FavoriteItemsWidgetState();
 }
 
 class _FavoriteItemsWidgetState extends State<FavoriteItemsWidget> {
-
   @override
   void initState() {
     super.initState();
@@ -25,62 +26,71 @@ class _FavoriteItemsWidgetState extends State<FavoriteItemsWidget> {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
         ),
-        itemCount: widget.favoritesGifs?.length ?? 0,
+        itemCount: context.watch<ModelDB>().favoritesGifs.length,
         itemBuilder: (BuildContext context, int index) {
           return Card(
+            shadowColor: Colors.black,
+            elevation: 5,
             color: Colors.blueGrey[100],
             child: Column(
               children: [
-                GestureDetector(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => ItemViewScreenWidget(
-                          imageUrl: widget.favoritesGifs?[index].gifUrl ?? '',
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => ItemViewScreenWidget(
+                            imageUrl: widget.favoritesGifs[index]
+                                .gifUrl,
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(1.5),
-                    child: Image(
-                      image: NetworkImage(
-                        widget.favoritesGifs?[index].previewUrl ?? '',
+                      );
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+                      child: Image(
+                        image: NetworkImage(
+                          context
+                                  .watch<ModelDB>()
+                                  .favoritesGifs[index]
+                                  .previewUrl,
+                        ), fit: BoxFit.fill,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(
-                  height: 5,
+                  height: 3,
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Row(
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const Icon(Icons.delete, color: Colors.brown,),
                         onPressed: () {
-                          widget.currentDB.deleteFromDB(widget.favoritesGifs![index].id);
-                          setState(() {});
+                          widget.currentDB.deleteFromDB(
+                              context.read<ModelDB>().favoritesGifs[index].id);
+                          context.read<ModelDB>().updateListValueInDelete();
                         },
                       ),
                       const SizedBox(
-                        width: 95.7,
+                        width: 90,
+                        //child: text(),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.share),
+                        icon: const Icon(Icons.share, color: Colors.blue,),
                         onPressed: () {
-                          if (widget.favoritesGifs![index].previewUrl != null) {
-                            Share.share(
-                                widget.favoritesGifs![index]
-                                    .previewUrl,
-                                subject: 'look');
-                          }
+                          Share.share(
+                              context
+                                  .watch<ModelDB>()
+                                  .favoritesGifs[index]
+                                  .previewUrl,
+                              subject: 'look');
                         },
                       ),
                     ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+
 class ItemViewScreenWidget extends StatelessWidget {
   final String imageUrl;
   const ItemViewScreenWidget({super.key, required this.imageUrl});
@@ -11,9 +12,11 @@ class ItemViewScreenWidget extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Search in tenor'),
         ),
-        body: Image(
-          image: NetworkImage(
-            imageUrl,
+        body: Center(
+          child: Image(
+            image: NetworkImage(
+              imageUrl,
+            ),
           ),
         ),
     );
